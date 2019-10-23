@@ -1,0 +1,63 @@
+<html>
+
+<head>
+	<title>Demo Socketio - Homepage</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			// var socket = io("http://localhost:8080");
+			//client nhận dữ liệu từ server
+			var allData;
+
+			// socket.on('data', function (data) {
+				
+			// 	$("#"+data.topic).text(data.message);
+			// })
+			socket.on('test', function (data) {
+				$("#chat-content").append(data);
+				console.log(data)
+			})
+			//client gửi dữ liệu lên server
+
+			// $("#send").click(function () {
+			// 	$("#sss").text("aaaaaaaaaaaaaaaaa")
+			// });
+
+			socket.on("Server-sent-data", function (data) {
+				$("#chat-content").append(data);
+			});
+			socket.on("load_data", function (data) {
+				var a = (data[0].name);
+				console.log(a);	
+				$("#chat-content").append(data);
+			});
+
+			socket.on("aa", function (data) {
+				
+				console.log(data);
+				// $("#onoff").append("data");
+			});
+
+			socket.on("image",(data) => {
+				console.log(data);
+			});
+		
+		});
+	</script>
+</head>
+
+<body>
+	<h1>Demo Socketio</h1>
+
+	<div>
+		<button id="send">Send</button>
+	</div>
+
+	<div id="chat-content">den 1 :       <%= test[0].last_value%></div>
+	<div id="onoff">   </div>
+	<img id="image">
+</body>
+
+</html>

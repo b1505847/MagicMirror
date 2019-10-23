@@ -1,0 +1,21 @@
+
+body{
+    font-size: 120%;
+}
+
+.small{
+    font-size: 100%;
+}
+
+.row{
+    margin: 10px 0;
+}
+
+
+.turnOn{
+    color: #000;
+}
+
+.turnOn .icon{
+    color: yellow;
+}
