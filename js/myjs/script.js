@@ -30,6 +30,12 @@ $(document).ready(function () {
 			}
 		}
 	};
+	var checkLoadDisplay = function(data){
+		var id = data.topic;
+		id = id.replace(".","\\.");
+		var val = data.message;
+		$("#"+id).text(val);
+	};
 	// Nhận toàn dữ liệu
 	socket.on("allData", function (data) {
 		console.log(data);
@@ -185,6 +191,7 @@ $(document).ready(function () {
 			}
 		}
 		checkToggleGroup(checkbox);
+		checkLoadDisplay(data);
 	});
 
 	//Hẹn giờ
