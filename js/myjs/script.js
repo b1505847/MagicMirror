@@ -2,6 +2,7 @@ $(document).ready(function () {
 	var socket = io("http://localhost:8080");
 	var checkbox;
 	var toggleTimer;
+	var thongbao = 0;
 	// Nút group button
 	var checkToggleGroup = function (checkbox) {
 		var numberOn = 0;
@@ -30,11 +31,11 @@ $(document).ready(function () {
 			}
 		}
 	};
-	var checkLoadDisplay = function(data){
+	var checkLoadDisplay = function (data) {
 		var id = data.topic;
-		id = id.replace(".","\\.");
+		id = id.replace(".", "\\.");
 		var val = data.message;
-		$("#"+id).text(val);
+		$("#" + id).text(val);
 	};
 	// Nhận toàn dữ liệu
 	socket.on("allData", function (data) {
@@ -150,7 +151,7 @@ $(document).ready(function () {
 			dayOfWeed: again,
 			_id: _id,
 			name: name,
-			state:status
+			state: status
 		};
 		// alert(hour+"-"+ min +"-"+topic+" - "+state);
 		// console.log(again);
@@ -333,6 +334,98 @@ $(document).ready(function () {
 		checkLoadTimer(toggleTimer);
 	});
 	// sửa hẹn giờ
+
+	socket.on("loadNotifycation", function (data) {
+		console.log(data);
+		$(".thongbao").text("");
+		$(".notify").text("");
+		var dem = 0;
+		var check = 0;
+		data.forEach((element, index) => {
+			var temp = Date.parse(element.time);
+			var dateTime = new Date(temp);
+			var gio = dateTime.getHours();
+			var phut = dateTime.getMinutes();
+			var ngay = dateTime.getDate();
+			var thang = dateTime.getMonth() + 1;
+			var nam = dateTime.getFullYear();
+			if (gio < 10) {
+				gio = "0" + gio;
+			}
+			if (phut < 10) {
+				phut = "0" + phut;
+			}
+			if (ngay < 10) {
+				ngay = "0" + ngay;
+			}
+			if (thang < 10) {
+				thang = "0" + thang;
+			}
+			var icon;
+			if (element.type === "hien-thi.cam-bien-mua") {
+				icon = "fas fa-cloud-rain";
+			}
+			var textDay = gio + ":" + phut + " " + ngay + "/" + thang + "/" + nam;
+			var daDoc = "";
+			if (element.status == 0) {
+				dem++;
+				daDoc = "font-weight-bold";
+			} else {
+				check++;
+			}
+			$(".notify").append("<a class=\"dropdown-item d-flex align-items-center \" >" +
+				"<div class=\"mr-3\">" +
+				"<div class=\"icon-circle bg-primary\">" +
+				"<i class=\"" + icon + " text-white\"></i>" +
+				"</div>" +
+				"</div>" +
+				"<div style=\"width:100%\">" +
+				"<div class=\"small text-gray-500\">" + textDay + "</div>" +
+				"<span class=\"" + daDoc + "\">" + element.text + "</span> " +
+				"</div>" +
+				"<div class=\"btn btn-primary float-right del-notify\" id=\"del-"+element._id+"\"><i class=\"fas fa-trash-alt\" style=\"color: #fff;\"></i></div>"+
+				"</a>");
+			if (check <= 3) {
+				$(".thongbao").append("<a class=\"dropdown-item d-flex align-items-center\" href=\"#\">" +
+					"<div class=\"mr-3\" id=\"" + element._id + "\">" +
+					"<div class=\"icon-circle bg-primary\">" +
+					"<i class=\"" + icon + " text-white\"></i>" +
+					"</div>" +
+					"</div>" +
+					"<div>" +
+					"<div class=\"small text-gray-500\">" + textDay + "</div>" +
+					"<span class=\"" + daDoc + "\">" + element.text + "</span>" +
+					"</div>" +
+					"</a>");
+			}
+
+		});
+		if (dem > 3) {
+			$("#numberNotify").text("3+");
+		} else if (dem == 0) {
+			$("#numberNotify").text("");
+		} else {
+			$("#numberNotify").text(dem);
+		}
+
+		var delNotify = $(".del-notify");
+		$(delNotify).click(function () {
+			var id = $(this).closest(".del-notify").attr("id");
+			id = id.slice(4);
+			console.log(id);
+			$.ajax({
+				url: "myhome/deleteNotify",
+				type: "post",
+				contentType: "application/json",
+				data: JSON.stringify({ id: id }),
+				success: function (result) {
+					console.log(result);
+					// alert("Đã xóa");
+					// $("#close").trigger("click");
+				}
+			});
+		});
+	});
 	updateTimer = function (data) {
 		$.ajax({
 			url: "myhome/update",
@@ -355,8 +448,46 @@ $(document).ready(function () {
 		$("#exampleModalLabel").text("Thêm hẹn giờ");
 		var d = new Date();
 		$("select[name=hour]").val(d.getHours());
-		$("select[name=minute]").val(d.getMinutes());
+		$("select[name=minute]").val(d.getMinutes()+1);
 		$("select[name=select-topic]").prop("selectedIndex", 0);
 		$("select[name=state]").prop("selectedIndex", 0);
+	});
+
+	$(".cai-chuong").on("hidden.bs.dropdown", function () {
+		if (thongbao === 0) {
+			loadCaiChuong();
+		}
+	});
+	$("#allThongBao").click(function () {
+		thongbao = 1;
+	});
+	$("#notification").on("hidden.bs.modal", function () {
+		thongbao = 0;
+		loadCaiChuong();
+	});
+	function loadCaiChuong() {
+		$.ajax({
+			url: "myhome/caichuong",
+			type: "get",
+			contentType: "application/json",
+			success: function (result) {
+				console.log(result);
+				// alert("Đã xóa");
+				// $("#close").trigger("click");
+			}
+		});
+	}
+	$("#delele-all").click(function(){
+		// alert("aaaaaaaaaaaaa");
+		$.ajax({
+			url: "myhome/deleteALl",
+			type: "post",
+			contentType: "application/json",
+			success: function (result) {
+				console.log(result);
+				// alert("Đã xóa");
+				// $("#close").trigger("click");
+			}
+		});
 	});
 });

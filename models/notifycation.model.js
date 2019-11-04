@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-var notifySchema = new  mongoose.Schema({
+var notifycationSchema = new  mongoose.Schema({
 	type:{
 		type: String
 	},
@@ -15,4 +15,4 @@ var notifySchema = new  mongoose.Schema({
 	},
 });
 
-mongoose.model("Notifycation",notifySchema);
+mongoose.model("Notifycation",notifycationSchema);

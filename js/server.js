@@ -21,7 +21,7 @@ var moment = require("moment");
 var mqtt = require("mqtt");
 const mongoose = require("mongoose");
 const Timer = mongoose.model("Timer");
-
+const Notifycation = mongoose.model("Notifycation");
 // const wCap = new cv.VideoCapture(0);
 var Server = function (config, callback) {
 
@@ -131,6 +131,7 @@ var Server = function (config, callback) {
 				io.emit("allData", allData);
 				console.log(allData);
 				loadTimer();
+				loadNotifycation();
 			} else {
 				console.log(error);
 			}
@@ -190,7 +191,37 @@ var Server = function (config, callback) {
 		});
 
 	};
+	var loadNotifycation = () => {
+		Notifycation.find().sort({ status:1, time:-1}).exec((err, docs) => {
+			if (!err) {
+				console.log(docs);
+				io.emit("loadNotifycation", docs);
+				return docs;
+			}
+			else {
+				console.log("Error in retrieving list :" + err);
+			}
+		});
 
+	};
+
+	function insertNotifycation(value) {
+		var notify = new Notifycation();
+		notify.type = value.type;
+		notify.time = value.time;
+		notify.text = value.text;
+		notify.status = value.status;
+		notify.save((err, doc) => {
+			if (!err) {
+				loadNotifycation();
+				// console.log(doc);
+				// loadTimer();
+			}
+			else {
+				console.log("Error during record insertion : " + err);
+			}
+		});
+	}
 	var options = {
 		username: "vvphat",
 		password: "20362ca9413947a5a41de99394e3b202"
@@ -210,10 +241,18 @@ var Server = function (config, callback) {
 		console.log(topic + " - " + message.toString());
 		topic = topic.slice(13);
 		io.emit("data", { topic: topic, message: message.toString() });
-		if(topic == "onoff" && message.toString()=="ON"){
-			var text = "Ngoài trời hiện đang mưa. Anh Phát cẩn thận nhé";
-			message = {text:text};
-			sendMessenger(message);
+		if (topic == "hien-thi.cam-bien-mua" && message.toString() == "ON") {
+			var type = topic;
+			var time = new Date();
+			var text = "Ngoài trời đang mưa. Xin anh Phát lưu ý!";
+			var status = 0;
+			var value = {
+				type: type,
+				time: time,
+				text: text,
+				status: status
+			};
+			insertNotifycation(value);
 		}
 	});
 	// var abc = [{ hour: 21, min: 20 }, { hour: 21, min: 21 }, { hour: 21, min: 22 }, { hour: 21, min: 23 }];
@@ -244,7 +283,7 @@ var Server = function (config, callback) {
 	});
 	app.post("/myhome/delete", jsonParser, (req, res) => {
 		// console.log(req.body);
-		console.log("Add Timer");
+		console.log("Xóa Timer");
 		Timer.findByIdAndRemove(req.body.id, (err, doc) => {
 			if (!err) {
 				// ??res.redirect('/employee/list');
@@ -256,28 +295,47 @@ var Server = function (config, callback) {
 
 	});
 
-	app.get("/myhome/send", jsonParser, (req, res) => {
+	app.post("/myhome/deleteNotify", jsonParser, (req, res) => {
 		// console.log(req.body);
-		var text = {text: "Gửi tin nhắn"};
-		sendMessenger(text);
+		console.log("xóa thông báo");
+		Notifycation.findByIdAndRemove(req.body.id, (err, doc) => {
+			if (!err) {
+				// ??res.redirect('/employee/list');
+				res.send("Đã xóa");
+				loadNotifycation();
+			}
+			else { console.log("Error in Timer delete :" + err); }
+		});
 
 	});
 
-	var sendMessenger = (text)=>{
-		var url = "https://vvphat-test.glitch.me/send";
-		request({
-			method: "POST",
-			uri: url,
-			json: true,
-			body: text,
-		}, function (error, response, body) {
-			if (!error && response.statusCode == 200) {
-				console.log(body);
-			} else {
-				console.log(error);
-			}
-		});
-	};
+	app.get("/myhome/send", jsonParser, (req, res) => {
+		// console.log(req.body);
+		var text = { text: "Gửi tin nhắn" };
+		sendMessenger(text);
+
+	});
+	app.get("/myhome/caichuong", jsonParser, (req, res) => {
+		console.log("OOOOOOOOKKKKKKKMMMMMM");
+		updateNotifycation();
+		loadNotifycation();
+		res.send("Ok đã xong");
+	});
+	// var sendMessenger = (text)=>{
+	// 	var url = "https://vvphat-test.glitch.me/send";
+	// 	request({
+	// 		method: "POST",
+	// 		uri: url,
+	// 		json: true,
+	// 		body: text,
+	// 	}, function (error, response, body) {
+	// 		if (!error && response.statusCode == 200) {
+	// 			console.log(body);
+	// 		} else {
+	// 			console.log(error);
+	// 		}
+	// 	});
+	// };
 	app.post("/myhome/findone", jsonParser, (req, res) => {
 		console.log(req.body);
 		console.log("Find One Timer");
@@ -287,7 +345,20 @@ var Server = function (config, callback) {
 				res.send(doc);
 				// loadTimer();
 			}
-			else { console.log("Error in Timer delete :" + err); }
+			else { console.log("Error in Timer :" + err); }
+		});
+
+	});
+	app.post("/myhome/deleteAll", jsonParser, (req, res) => {
+		// console.log(req.body);
+		console.log("delete all nofity");
+		Notifycation.remove((err, doc) => {
+			if (!err) {
+				// ??res.redirect('/employee/list');
+				res.send("Đã xóa");
+				loadNotifycation();
+			}
+			else { console.log("Error in DeleteNotify :" + err); }
 		});
 
 	});
@@ -316,11 +387,11 @@ var Server = function (config, callback) {
 		var id = req.body.id;
 		var data = req.body.data;
 		console.log("Update Timer");
-		updateTimer(id,data);
+		updateTimer(id, data);
 		res.send("Thành công CMNR");
 	});
 
-	function updateTimer(id,data) {
+	function updateTimer(id, data) {
 		Timer.findOneAndUpdate({ _id: id }, data, { new: true }, (err, doc) => {
 			if (!err) {
 				console.log("OKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
@@ -330,7 +401,15 @@ var Server = function (config, callback) {
 			}
 		});
 	}
-
+	function updateNotifycation(){
+		Notifycation.update({status:0},{status:1},{multi:true},(err,docs)=>{
+			if(!err){
+				console.log("đã sửa");
+			}else{
+				console.log(err);
+			}
+		});
+	}
 	// setInterval(() => {
 	// var allTimer = loadTimer();
 	//console.log(allTimer);
@@ -366,11 +445,11 @@ var Server = function (config, callback) {
 							if (e.dayOfWeed.length <= 0) {
 								client.publish(topic + e.topic, e.value);
 								console.log(e.topic);
-								updateTimer(e._id,{state:0});
+								updateTimer(e._id, { state: 0 });
 							} else {
 								if (oldMinute != now.minutes()) {
 									console.log(e.topic);
-									client.publish(topic+e.topic, e.value);
+									client.publish(topic + e.topic, e.value);
 								}
 							}
 						}

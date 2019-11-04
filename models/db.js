@@ -6,4 +6,4 @@ mongoose.connect("mongodb://localhost:27017/MirrorDB", { useNewUrlParser: true }
 });
 
 require("./timer.model");
-// require("./notification.model");
+require("./notifycation.model");

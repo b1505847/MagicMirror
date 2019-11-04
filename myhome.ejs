@@ -44,14 +44,14 @@
 					<ul class="navbar-nav ml-auto">
 
 						<!-- Nav Item - Search Dropdown (Visible Only XS) -->
-						
+
 						<!-- Nav Item - Alerts -->
-						<li class="nav-item dropdown no-arrow mx-1">
+						<li class="nav-item dropdown no-arrow mx-1 cai-chuong">
 							<a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
 								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								<i class="fas fa-bell fa-fw"></i>
 								<!-- Counter - Alerts -->
-								<span class="badge badge-danger badge-counter">3+</span>
+								<span class="badge badge-danger badge-counter" id = "numberNotify"></span>
 							</a>
 							<!-- Dropdown - Alerts -->
 							<div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
@@ -59,41 +59,44 @@
 								<h6 class="dropdown-header">
 									Thông báo
 								</h6>
-								<a class="dropdown-item d-flex align-items-center" href="#">
-									<div class="mr-3">
-										<div class="icon-circle bg-primary">
-											<i class="fas fa-cloud-rain text-white"></i>
+								<div class="thongbao">
+									<a class="dropdown-item d-flex align-items-center" href="#">
+										<div class="mr-3">
+											<div class="icon-circle bg-primary">
+												<i class="fas fa-cloud-rain text-white"></i>
+											</div>
 										</div>
-									</div>
-									<div>
-										<div class="small text-gray-500">15h45' 10/10/2019</div>
-										<span class="font-weight-bold">Trời đang mưa! Nhớ lấy đồ phơi. Mang áo mưa
-											nhé!</span>
-									</div>
-								</a>
-								<a class="dropdown-item d-flex align-items-center" href="#">
-									<div class="mr-3">
-										<div class="icon-circle bg-success">
-											<i class="fas fa-times-circle text-white"></i>
+										<div>
+											<div class="small text-gray-500">15h45' 10/10/2019</div>
+											<span class="font-weight-bold">Trời đang mưa! Nhớ lấy đồ phơi. Mang áo mưa
+												nhé!</span>
 										</div>
-									</div>
-									<div>
-										<div class="small text-gray-500">0h28' 11/10/2019</div>
-										Có phát hiện chuyển động
-									</div>
-								</a>
-								<a class="dropdown-item d-flex align-items-center" href="#">
-									<div class="mr-3">
-										<div class="icon-circle bg-success">
-											<i class="fas fa-donate text-white"></i>
+									</a>
+									<a class="dropdown-item d-flex align-items-center" href="#">
+										<div class="mr-3">
+											<div class="icon-circle bg-success">
+												<i class="fas fa-times-circle text-white"></i>
+											</div>
 										</div>
-									</div>
-									<div>
-										<div class="small text-gray-500">0h28' 11/10/2019</div>
-										Có phát hiện chuyển động
-									</div>
-								</a>
-								<a class="dropdown-item text-center small text-gray-500" href="#" data-toggle="modal" data-target="#notification">Xem tất cả thông
+										<div>
+											<div class="small text-gray-500">0h28' 11/10/2019</div>
+											Có phát hiện chuyển động
+										</div>
+									</a>
+									<a class="dropdown-item d-flex align-items-center" href="#">
+										<div class="mr-3">
+											<div class="icon-circle bg-success">
+												<i class="fas fa-donate text-white"></i>
+											</div>
+										</div>
+										<div>
+											<div class="small text-gray-500">0h28' 11/10/2019</div>
+											Có phát hiện chuyển động
+										</div>
+									</a>
+								</div>
+								<a class="dropdown-item text-center small text-gray-500" id="allThongBao" href="#" data-toggle="modal"
+									data-target="#notification">Xem tất cả thông
 									báo</a>
 							</div>
 						</li>
@@ -340,102 +343,33 @@
 		</div>
 	</div>
 
-	<div class="modal fade thongbao" id="notification" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+	<div class="modal fade " id="notification" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
 		aria-hidden="true">
 		<div class="modal-dialog modal-lg" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title">Hẹn giờ</h5>
+					<h5 class="modal-title">Thông báo</h5>
 					<button class="close" type="button" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">×</span>
 					</button>
 					<br>
 				</div>
-
-				<a class="dropdown-item d-flex align-items-center" href="#">
-					<div class="mr-3">
-						<div class="icon-circle bg-primary">
-							<i class="fas fa-file-alt text-white"></i>
+				<div class = "notify">
+					<a class="dropdown-item d-flex align-items-center " href="#">
+						<div class="mr-3">
+							<div class="icon-circle bg-primary">
+								<i class="fas fa-file-alt text-white"></i>
+							</div>
 						</div>
-					</div>
-					<div>
-						<div class="small text-gray-500">15h45' 10/10/2019</div>
-						<span class="font-weight-bold">Trời đang mưa! Nhớ lấy đồ phơi. Mang áo mưa
-							nhé!</span>
-					</div>
-				</a>
-				<a class="dropdown-item d-flex align-items-center" href="#">
-					<div class="mr-3">
-						<div class="icon-circle bg-primary">
-							<i class="fas fa-file-alt text-white"></i>
+						<div>
+							<div class="small text-gray-500">15h45' 10/10/2019</div>
+							<span class="font-weight-bold">Trời đang mưa! Nhớ lấy đồ phơi. Mang áo mưa
+								nhé!</span>
 						</div>
-					</div>
-					<div>
-						<div class="small text-gray-500">15h45' 10/10/2019</div>
-						<span class="font-weight-bold">Trời đang mưa! Nhớ lấy đồ phơi. Mang áo mưa
-							nhé!</span>
-					</div>
-				</a>
-				<a class="dropdown-item d-flex align-items-center" href="#">
-					<div class="mr-3">
-						<div class="icon-circle bg-primary">
-							<i class="fas fa-file-alt text-white"></i>
-						</div>
-					</div>
-					<div>
-						<div class="small text-gray-500">15h45' 10/10/2019</div>
-						<span class="font-weight-bold">Trời đang mưa! Nhớ lấy đồ phơi. Mang áo mưa
-							nhé!</span>
-					</div>
-				</a>
-				<a class="dropdown-item d-flex align-items-center" href="#">
-					<div class="mr-3">
-						<div class="icon-circle bg-primary">
-							<i class="fas fa-file-alt text-white"></i>
-						</div>
-					</div>
-					<div>
-						<div class="small text-gray-500">15h45' 10/10/2019</div>
-						<span class="font-weight-bold">Trời đang mưa! Nhớ lấy đồ phơi. Mang áo mưa
-							nhé!</span>
-					</div>
-				</a>
-				<a class="dropdown-item d-flex align-items-center" href="#">
-					<div class="mr-3">
-						<div class="icon-circle bg-primary">
-							<i class="fas fa-file-alt text-white"></i>
-						</div>
-					</div>
-					<div>
-						<div class="small text-gray-500">15h45' 10/10/2019</div>
-						<span class="font-weight-bold">Trời đang mưa! Nhớ lấy đồ phơi. Mang áo mưa
-							nhé!</span>
-					</div>
-				</a>
-				<a class="dropdown-item d-flex align-items-center" href="#">
-					<div class="mr-3">
-						<div class="icon-circle bg-primary">
-							<i class="fas fa-file-alt text-white"></i>
-						</div>
-					</div>
-					<div>
-						<div class="small text-gray-500">15h45' 10/10/2019</div>
-						<span class="font-weight-bold">Trời đang mưa! Nhớ lấy đồ phơi. Mang áo mưa
-							nhé!</span>
-					</div>
-				</a>
-				
-					<!-- <div>
-						<div class="row"><span>22:00  </span> Đèn toilet: Tắt</div>
-						<div class="row">Lặp lại: Mọi ngày</div>
-					</div>
-					<hr>
-					<div>
-						<div class="row"><span>22:00</span> Đèn toilet: Tắt</div>
-						<div class="row">Lặp lại: Mọi ngày</div>
-					</div> -->
-
-					<hr>
+					</a>
+				</div>
+				<div class="modal-footer">
+					<div class="btn btn-primary" id="delele-all">Xóa tất cả thông báo</div>
 				</div>
 			</div>
 		</div>
