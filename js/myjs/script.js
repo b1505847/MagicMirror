@@ -33,15 +33,52 @@ $(document).ready(function () {
 	};
 	var checkLoadDisplay = function (data) {
 		var id = data.topic;
-		id = id.replace(".", "\\.");
 		var val = data.message;
+		var icon;
+		if (id == "hien-thi.cam-bien-cua") {
+			if (val == "ON") {
+				val = "Mở";
+				icon = "fas fa-door-open fa-2x ";
+			}
+			else {
+				val = "Đóng";
+				icon = "fas fa-door-closed fa-2x ";
+			}
+		} else if (id == "hien-thi.cam-bien-mua") {
+			if (val == "ON") {
+				val = "Trời mưa";
+				icon = "fas fa-cloud-rain fa-2x ";
+			}
+			else {
+				val = "Trời không mưa";
+				icon = "fas fa-cloud fa-2x ";
+			}
+		}
+		if (id == "bao-ve.canh-bao") {
+			// id = id.replace(".", "\\.");
+			if (val == "ON") {
+				$(".canh-bao").addClass("turnOn");
+			} else {
+				$(".canh-bao").removeClass("turnOn");
+			}
+		} else if (id == "hien-thi.nhiet-do") {
+			var alpha = val / 50;
+			$("#" + id).css("color:rgba(255,0,0," + alpha + ")");
+			val = val + "°C";
+		} else if (id == "hien-thi.nhiet-do") {
+			val = val + "%C";
+		}
+		id = id.replace(".", "\\.");
+
 		$("#" + id).text(val);
+		$("#icon-" + id).attr("class", icon);
 	};
 	// Nhận toàn dữ liệu
 	socket.on("allData", function (data) {
 		console.log(data);
 		$(".thietbi").text("");
 		$(".hienthi").text("");
+		$(".canh-bao").text("Cảnh báo chống trộm ");
 		data.forEach(element => {
 			if (element.type === "den" || element.type === "cong-tac") {
 				var icon = element.icon;
@@ -53,10 +90,10 @@ $(document).ready(function () {
 					}
 				}
 				$(".thietbi").append("<div class=\"row row-toggle\" >" +
-					"<div class=\"col-1 icon\">" +
+					"<div class=\" icon\">" +
 					"<i class=\"" + icon + "\"></i>" +
 					"</div>" +
-					"<h4 class=\"small font-weight-bold col-11\">" + element.name + "<span class=\"float-right\">" +
+					"<h4 class=\"small font-weight-bold col\">" + element.name + "<span class=\"float-right\">" +
 					"<div class=\"custom-switch\">" +
 					"<input type=\"checkbox\" class=\"custom-control-input toggle\" id=\"" + element.topic + "\">" +
 					"<label class=\"custom-control-label\" for=\"" + element.topic + "\"></label>" +
@@ -64,15 +101,87 @@ $(document).ready(function () {
 					"</span>" +
 					"</h4>" +
 					"</div>");
-
+				var id = element.topic;
+				id = id.replace(".", "\\.");
 				if (element.value === "ON") {
-					$("#" + element.topic).prop("checked", true);
+					$("#" + id).prop("checked", true);
 				} else {
-					$("#" + element.topic).prop("checked", false);
+					$("#" + id).prop("checked", false);
+				}
+				$(".select-topic").append("<option value=\"" + element.topic + "\">" + element.name + "</option>");
+			}
+			if (element.topic == "bao-ve.canh-bao") {
+				$(".canh-bao").append("<span class=\"float-right\">" +
+					"<div class=\"custom-switch\">" +
+					"<input type=\"checkbox\" class=\"custom-control-input chongtrom\" id=\"" + element.topic + "\">" +
+					"<label class=\"custom-control-label\" for=\"" + element.topic + "\"></label>" +
+					"</div>" +
+					"</span>");
+				var id = element.topic;
+				id = id.replace(".", "\\.");
+				if (element.value == "ON") {
+					$("#" + id).prop("checked", true);
+					$(".canh-bao").addClass("turnOn");
+				} else {
+					$("#" + id).prop("checked", false);
 				}
 				$(".select-topic").append("<option value=\"" + element.topic + "\">" + element.name + "</option>");
 			}
 			if (element.type == "hien-thi") {
+				var icon = "fa-2x " + element.icon;
+				var text = element.value;
+				var color = "black";
+				if (element.topic == "hien-thi.cam-bien-cua") {
+					if (text == "ON") {
+						icon = "fas fa-door-open fa-2x ";
+						text = "Mở";
+					} else {
+						icon = "fas fa-door-closed fa-2x ";
+						text = "Đóng";
+					}
+				}
+				if (element.topic == "hien-thi.cam-bien-mua") {
+					if (text == "ON") {
+						icon = "fas fa-cloud-rain fa-2x ";
+						text = "Trời mưa";
+						color = "#4e73df;";
+					} else {
+						icon = "fas fa-cloud fa-2x ";
+						text = "Trời không mưa";
+						color = "#4e73df;"; (63, 208, 212)
+					}
+				} else if (element.topic == "hien-thi.nhiet-do") {
+					if (text > 0 && text <= 10) {
+						color = "#FBD400";
+					} else if (text > 10 && text <= 20) {
+						color = "#FB9E00";
+					} else if (text > 20 && text <= 30) {
+						color = "#F97C00";
+					}
+					else if (text > 30 && text <= 40) {
+						color = "#FE3F02";
+					} else {
+						color = "#FE0000";
+					}
+					text = text + "°C";
+					// console.log(alpha);
+				} else if (element.topic == "hien-thi.do-am") {
+					if (text > 0 && text <= 20) {
+						color = "#b9e8ea";
+					} else if (text > 20 && text <= 40) {
+						color = "#86d6d8";
+					} else if (text > 40 && text <= 60) {
+						color = "#69dadd";
+					}
+					else if (text > 60 && text <= 80) {
+						color = "#3fd0d4";
+					} else {
+						color = "#20c3d0";
+					}
+					text = text + "%";
+
+				}
+
 				$(".hienthi").append("<div class=\"col-xl-3 col-md-6 mb-4\">" +
 					"<div class=\"card border-left-primary shadow h-100 py-2\">" +
 					"<div class=\"card-body\">" +
@@ -80,16 +189,27 @@ $(document).ready(function () {
 					"<div class=\"col mr-2\">" +
 					"<div class=\"text-xs font-weight-bold text-primary text-uppercase mb-1\">" +
 					"" + element.name + "</div>" +
-					"<div class=\"h5 mb-0 font-weight-bold text-gray-800\" id=\"" + element.topic + "\">" + element.value + "</div>" +
+					"<div class=\"h5 mb-0 font-weight-bold text-gray-800\" id=\"" + element.topic + "\">" + text + "</div>" +
 					"</div>" +
 					"<div class=\"col-auto\">" +
-					"<i class=\"" + element.icon + " fa-2x text-gray-300\"></i>" +
+					"<i id=\"icon-" + element.topic + "\" class=\"" + icon + " \" style=\"color:" + color + ";\"></i>" +
 					"</div>" +
 					"</div>" +
 					"</div>" +
 					"</div>" +
 					"</div>");
 			}
+		});
+		var canhbao = $(".chongtrom");
+		canhbao.click(function () {
+			var id = canhbao.attr("id");
+			console.log(id);
+			if (canhbao.is(":checked")) {
+				sendData(id, "ON");
+			} else {
+				sendData(id, "OFF");
+			}
+
 		});
 		// nút cong tắc
 		checkbox = $(".toggle");
@@ -191,6 +311,7 @@ $(document).ready(function () {
 				break;
 			}
 		}
+
 		checkToggleGroup(checkbox);
 		checkLoadDisplay(data);
 	});
@@ -364,6 +485,8 @@ $(document).ready(function () {
 			var icon;
 			if (element.type === "hien-thi.cam-bien-mua") {
 				icon = "fas fa-cloud-rain";
+			} else if (element.type === "bao-ve.phat-hien") {
+				icon = "fas fa-ban";
 			}
 			var textDay = gio + ":" + phut + " " + ngay + "/" + thang + "/" + nam;
 			var daDoc = "";
@@ -373,7 +496,14 @@ $(document).ready(function () {
 			} else {
 				check++;
 			}
-			$(".notify").append("<a class=\"dropdown-item d-flex align-items-center \" >" +
+			var url = "";
+
+			if (element.url != undefined) {
+				url = "href = \'" + element.url + "\'  target=\'_blank\'";
+			}
+			// console.log(url);
+			//bảng thông báo khi mở lên
+			$(".notify").append("<div class=\"dropdown-item d-flex align-items-center \"" + " \"> " +
 				"<div class=\"mr-3\">" +
 				"<div class=\"icon-circle bg-primary\">" +
 				"<i class=\"" + icon + " text-white\"></i>" +
@@ -381,12 +511,12 @@ $(document).ready(function () {
 				"</div>" +
 				"<div style=\"width:100%\">" +
 				"<div class=\"small text-gray-500\">" + textDay + "</div>" +
-				"<span class=\"" + daDoc + "\">" + element.text + "</span> " +
+				"<a " + url + "><span class=\"" + daDoc + "\">" + element.text + "</span> </a>" +
 				"</div>" +
-				"<div class=\"btn btn-primary float-right del-notify\" id=\"del-"+element._id+"\"><i class=\"fas fa-trash-alt\" style=\"color: #fff;\"></i></div>"+
-				"</a>");
+				"<div class=\"btn btn-primary float-right del-notify\" id=\"del-" + element._id + "\"><i class=\"fas fa-trash-alt\" style=\"color: #fff;\"></i></div>" +
+				"</div>");
 			if (check <= 3) {
-				$(".thongbao").append("<a class=\"dropdown-item d-flex align-items-center\" href=\"#\">" +
+				$(".thongbao").append("<div class=\"dropdown-item d-flex align-items-center\" " + " >" +
 					"<div class=\"mr-3\" id=\"" + element._id + "\">" +
 					"<div class=\"icon-circle bg-primary\">" +
 					"<i class=\"" + icon + " text-white\"></i>" +
@@ -394,9 +524,9 @@ $(document).ready(function () {
 					"</div>" +
 					"<div>" +
 					"<div class=\"small text-gray-500\">" + textDay + "</div>" +
-					"<span class=\"" + daDoc + "\">" + element.text + "</span>" +
+					"<a " + url + "><span class=\"" + daDoc + "\">" + element.text + "</span></a>" +
 					"</div>" +
-					"</a>");
+					"</div>");
 			}
 
 		});
@@ -448,7 +578,7 @@ $(document).ready(function () {
 		$("#exampleModalLabel").text("Thêm hẹn giờ");
 		var d = new Date();
 		$("select[name=hour]").val(d.getHours());
-		$("select[name=minute]").val(d.getMinutes()+1);
+		$("select[name=minute]").val(d.getMinutes() + 1);
 		$("select[name=select-topic]").prop("selectedIndex", 0);
 		$("select[name=state]").prop("selectedIndex", 0);
 	});
@@ -477,10 +607,10 @@ $(document).ready(function () {
 			}
 		});
 	}
-	$("#delele-all").click(function(){
+	$("#delele-all").click(function () {
 		// alert("aaaaaaaaaaaaa");
 		$.ajax({
-			url: "myhome/deleteALl",
+			url: "myhome/deleteAll",
 			type: "post",
 			contentType: "application/json",
 			success: function (result) {
@@ -489,5 +619,130 @@ $(document).ready(function () {
 				// $("#close").trigger("click");
 			}
 		});
+	});
+	const peer = new Peer({});
+	var cameraid;
+	const video = document.getElementById("remoteVideo");
+	const canvas = document.getElementById("canvas");
+	const photo = document.getElementById("photo");
+	const btnCapture = document.getElementById("capture-camera");
+	var width = 500;    // We will scale the photo width to this
+	var height = 0;     // This will be computed based on the input stream
+
+	var streaming = false;
+	// function openStream() {
+	// 	const config = { audio: false, video: true };
+	// 	return navigator.mediaDevices.getUserMedia(config);
+	// }
+	// function playStream(idVideoTag, stream) {
+	// 	const video = document.getElementById(idVideoTag);
+	// 	video.srcObject = stream;
+	// 	video.play();
+	// }
+	peer.on("open", id => {
+		console.log(id);
+		// socket.emit("pp", id);
+		cameraid = id;
+	});
+	peer.on("call", call => {
+		call.answer();
+		// alert("bbbb");
+		// console.log(stream);
+		// call.on("stream", remoteStream => playStream("remoteVideo", remoteStream));
+		call.on("stream", stream => { video.srcObject = stream; });
+	});
+	$("#open-camera").click(function () {
+		// alert(cameraid);
+		socket.emit("openCamera", cameraid);
+		$("#close-camera").attr("disabled", false);
+		$("#capture-camera").attr("disabled", false);
+		$("#record-camera").attr("disabled", false);
+		// $("#stop-camera").attr("disabled", false);
+		$("#open-camera").attr("disabled", true);
+	});
+	$("#close-camera").click(function () {
+		// alert(cameraid);
+		socket.emit("closeCamera", cameraid);
+		video.pause();
+		video.src = "";
+		$("#open-camera").attr("disabled", false);
+		$("#close-camera").attr("disabled", true);
+		$("#capture-camera").attr("disabled", true);
+		$("#record-camera").attr("disabled", true);
+		$("#stop-camera").attr("disabled", true);
+	});
+	$(window).on("beforeunload", function () {
+		socket.emit("closeCamera", cameraid);
+	});
+
+	video.addEventListener("canplay", function (ev) {
+		if (!streaming) {
+			height = video.videoHeight / (video.videoWidth / width);
+
+			video.setAttribute("width", width);
+			video.setAttribute("height", height);
+			canvas.setAttribute("width", width);
+			canvas.setAttribute("height", height);
+			streaming = true;
+		}
+	}, false);
+
+	btnCapture.addEventListener("click", function (ev) {
+		// alert("aaaaaa");
+		takepicture();
+		ev.preventDefault();
+	}, false);
+	function clearphoto() {
+		var context = canvas.getContext("2d");
+		context.fillStyle = "#AAA";
+		context.fillRect(0, 0, canvas.width, canvas.height);
+		var data = canvas.toDataURL("image/png");
+		console.log(data);
+		photo.setAttribute("src", data);
+	}
+	function takepicture() {
+		var context = canvas.getContext("2d");
+		if (width && height) {
+			canvas.width = width;
+			canvas.height = height;
+			context.drawImage(video, 0, 0, width, height);
+			var data = canvas.toDataURL("image/jpeg");
+
+			var dataImg = { imgBase64: data };
+			console.log(dataImg);
+			$.ajax({
+				type: "POST",
+				url: "/facedata",
+				contentType: "application/json",
+				data: JSON.stringify(dataImg),
+				success: function (result) {
+					console.log(result);
+					// alert("Đã lưu");
+					// $("#close").trigger("click");
+				}
+			}).done(function (o) {
+				console.log("saved");
+
+			});
+		} else {
+			clearphoto();
+		}
+	}
+
+	$("#record-camera").click(function () {
+		// alert(cameraid);
+		socket.emit("recordCamera");
+		// $("#close-camera").attr("disabled", false);
+		$("#stop-camera").attr("disabled", false);
+		$("#record-camera").attr("disabled", true);
+		$("#close-camera").attr("disabled", true);
+	});
+
+	$("#stop-camera").click(function () {
+		// alert(cameraid);
+		socket.emit("stopCamera");
+		$("#stop-camera").attr("disabled", true);
+		$("#record-camera").attr("disabled", false);
+		$("#close-camera").attr("disabled", false);
 	});
 });

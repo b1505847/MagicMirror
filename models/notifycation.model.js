@@ -13,6 +13,9 @@ var notifycationSchema = new  mongoose.Schema({
 	status: {
 		type: Number
 	},
+	url:{
+		type: String
+	},
 });
 
 mongoose.model("Notifycation",notifycationSchema);

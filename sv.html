@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>SSS</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://unpkg.com/peerjs@1.0.0/dist/peerjs.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+    </head>
+    <body>
+        
+            <h3 id="my-peer">Your Id: </h3>
+            <video id="localVideo" width="300" playsinline autoplay muted></video>
+            <br /><br />
+            <video id="remoteVideo" width="300" controls></video>
+            <br /><br />
+            <input type="text" id="remoteId" placeholder="Remote ID">
+            <button id="btnCall">Call</button>
+        
+        
+    </body>
+    <script src="js/myjs/main.js"></script>
+</html>

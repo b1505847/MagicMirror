@@ -19,3 +19,10 @@ body{
 .turnOn .icon{
     color: yellow;
 }
+
+.btn-camera{
+    margin: 5px;
+}
+.icon{
+    width: 20px;
+}
