@@ -65,7 +65,7 @@
     "googleapis": "^39.2.0",
     "helmet": "^3.9.0",
     "iconv-lite": "latest",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "mongoose": "^5.7.5",
     "mqtt": "^3.0.0",
     "opencv4nodejs": "4.7.3",
